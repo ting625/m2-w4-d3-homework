@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Food Blog</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sacramento&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!--Link to CSS-->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+ <header>
+    <div class="container">
+        <nav class="navbar navbar-expand-sm navbar-light bg-transparent">
+
+<!-- Hamburger Menu -->
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent"
+aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div id="navbarContent" class="collapse navbar-collapse">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Recipes</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Lifestyles</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Videos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+    </ul>
+</div>
+
+</header>   
+
+
+<aside id="leftside"></aside>
+<aside id="rightside"></aside>
+<div id="container">
+<div class="header_title"><span>Food Blog</span></div>
+
+<main>
+    
+<h2>Comments</h2>
+    
+<section id="blogposts" class="container mt-1">
+    <div class="post mb-2 border rounded">
+        <span class="author font-weight-bold">Brianna</span> —
+        <span class="date">February 18, 2021 @ 3:30 pm</span>
+        <span class="reply">REPLY</span>
+        <p class="mt-2">
+            Was amazing! My Walmart didn't have coriander in stock and didn't have ground cumin. I used serrano instead of jalapeño. It was just like my favorite tortilla soup from BJs. I am sending this recipe to my family. I want everyone to try it!
+        </p>
+    </div>
+
+    <div class="post mb-2 border rounded">
+        <span class="author font-weight-bold">LINH</span> —
+        <span class="date">February 15, 2021 @ 9:46 am</span>
+        <span class="reply">REPLY</span>
+        <p class="mt-2">
+            I just made this soup today and it's so tasty! didn't have corn at home but still turned out very good. It's a winner! I made beef chili for my parents; but since my dad has gout he can't eat beef; this white chicken chili is perfect for him. Thank you Lisa!
+        </p>
+    </div>
+
+    <div class="post mb-2 border rounded">
+        <span class="author font-weight-bold">CATHERINE LEONARDO</span> —
+        <span class="date">February 13, 2021 @ 12:58 pm</span>
+        <span class="reply">REPLY</span>
+        <p class="mt-2">
+            I LOVE this White Chicken Chili! You are right, it is satiating meal—delicious with toasted bread. Refreshingly different taste than any chicken chili I've made in the past. I made it exactly as written and added some chopped zucchini, carrots, and celery. Instead of shredding the chicken, I chopped it into small pieces. It freezes very well. Will be an all-time favorite, for sure.
+        </p>
+    </div>
+
+    <div class="post mb-2 border rounded">
+        <span class="author font-weight-bold">KALI</span> —
+        <span class="date">February 13, 2021 @ 11:31 am</span>
+        <span class="reply">REPLY</span>
+        <p class="mt-2">
+            This recipe is dynamite! My partner usually won't eat beans but he finished the whole pot (darn was hoping to have some for leftovers haha). This is crowd-pleaser that I am going to add to my regular recipe rotation. Thanks so much, Lisa!
+        </p>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    &copy; Copyright FOOD BLOG
+</footer>
+
+<!-- Convert to VUE -->
+    <main>
+        <div id="photoComponent">
+            <photo-gallery></photo-gallery>
+        </div>
+
+<script>
+
+    Vue.component('photo-gallery', {
+        template: `
+            <aside id="photos">
+                <img v-for="photo in photos" :src="photo.src" :alt="photo.alt" :width="photo.width">
+            </aside>
+        `,
+        data() {
+            return {
+                photos: [
+                    { src: 'images/chili.jpg', alt: 'White Chicken Chili', width: '180' }
+                ],
+            }
+        },
+    });
+
+    Vue.component('modal', {
+        template: `
+            <div class="modal">
+                <div class="modal-content">
+                    <span class="close" @click="close">&times;</span>
+                    <h3>{{ profile.name }}</h3>
+                    <p class="title"> Foodie Level: 
+                    <span> {{ profile.level }}</span>
+                    <p class="title"> Bio: 
+                    <p class=bio> {{ profile.bio }}</p>
+                    <span class="btn_close" @click="close">Close </span>
+                </div>
+            </div>
+        `,
+        props: ['profile'],
+        methods: {
+            close() {
+                this.$emit('close');
+            }
+        }
+    });
+
+    Vue.component('comments-section', {
+        template: `
+            <div>
+                <h2>Comments</h2>
+                <section id="blogposts">
+                    <div class="post" v-for="comment in comments" :key="comment.id">
+                        <img :src="comment.profileSrc" alt="Profile Image" @click="imageClicked(comment.profile)">
+                        <span class="author">{{ comment.author }}</span> — 
+                        <span class="date">{{ comment.date }}</span>
+                        <span class="reply">REPLY</span>
+                        <p>{{ comment.content }}</p>
+                    </div>
+                </section>
+                <modal v-if="isModalVisible" :profile="currentProfile" @close="isModalVisible = false"></modal>
+            </div>
+        `,
+        data() {
+            return {
+                comments: [
+                    { 
+                        id: 1, 
+                        author: 'Brianna', 
+                        date: 'February 18, 2021 @ 3:30 pm', 
+                        content: "Was amazing! My Walmart didn't have coriander in stock and didn't have ground cumin. I used serrano instead of jalapeño. It was just like my favorite tortilla soup from BJs. I am sending this recipe to my family. I want everyone to try it!", 
+                        profileSrc: 'profile.png',
+                        profile: {
+                            name: 'Brianna',
+                            level: 'Novice',
+                            bio: 'Food enthusiast. Love to cook and experiment. Into only organic, fat free, sugar free stuffs!'
+                        }
+                    },
+                    { 
+                        id: 2, 
+                        author: 'LINH', 
+                        date: 'February 15, 2021 @ 9:46 am', 
+                        content: "I just made this soup today and it's so tasty! didn't have corn at home but still turned out very good. It's a winner! I made beef chili for my parents; but since my dad has gout he can't eat beef; this white chicken chili is perfect for him. Thank you Lisa!", 
+                        profileSrc: 'profile.png',
+                        profile: {
+                            name: 'LINH',
+                            level: 'Newcomer',
+                            bio: 'Love food! Grew up with meat and potatoes. Recently venture outside my comfort zone. Loving everything I have been eating so far. Thai is my favorite at this time.'
+                        }
+                    },
+                    { 
+                        id: 3, 
+                        author: 'CATHERINE LEONARDO', 
+                        date: 'February 13, 2021 @ 12:58 pm', 
+                        content: "I LOVE this White Chicken Chili! You are right, it is satiating meal—delicious with toasted bread. Refreshingly different taste than any chicken chili I've made in the past. I made it exactly as written and added some chopped zucchini, carrots, and celery. Instead of shredding the chicken, I chopped it into small pieces. It freezes very well. Will be an all-time favorite, for sure.", 
+                        profileSrc: 'profile.png',
+                        profile: {
+                            name: 'CATHERINE LEONARDO',
+                            level: 'Mentor',
+                            bio: 'I have to say I never was the adventurous type until 2 years ago. My boyfriend, who is of Japanese background, exposed me to other cultural food and I have never look back since!'
+                        }
+                    },
+                    { 
+                        id: 4, 
+                        author: 'KALI', 
+                        date: 'February 13, 2021 @ 11:31 am', 
+                        content: "This recipe is dynamite! My partner usually won't eat beans but he finished the whole pot (darn was hoping to have some for leftovers haha). This is crowd-pleaser that I am going to add to my regular recipe rotation. Thanks so much, Lisa!", 
+                        profileSrc: 'profile.png',
+                        profile: {
+                            name: 'KALI',
+                            level: 'Novice',
+                            bio: "Food is my passion. So is cooking. I love to experiment and try new things. I have to admit I'm a food whore! Invite me over for dinner and I'll be there!"
+                        }
+                    }
+                ],
+                isModalVisible: false,
+                currentProfile: {}
+            }
+        },
+        methods: {
+            imageClicked(profile) {
+                this.currentProfile = profile;
+                this.isModalVisible = true;
+            }
+        }
+    });
+
+
+    var vm1 = new Vue({
+        el: '#headerComponent'
+    });
+    var vm2 = new Vue({
+        el: '#photoComponent'
+    });
+    var vm3 = new Vue({
+        el: '#commentsComponent'
+    });
+    var vm4 = new Vue({
+        el: '#footerComponent'
+    });
+
+</script>
+
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>
